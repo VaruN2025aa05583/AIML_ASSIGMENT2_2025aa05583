@@ -9,10 +9,11 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title="Breast Cancer Classification", layout="wide")
 
 st.title("Breast Cancer Classification App")
-st.markdown("Assignment 2 - BITS Pilani")
+st.markdown("ML Assignment 2 | Breast Cancer Classification - 2025aa05583")
 
 # --- 1. UPLOAD DATA ---
-uploaded_file = st.sidebar.file_uploader("Upload CSV file (Test Data)", type=["csv"])
+uploaded_file = st.file_uploader("Upload CSV file (Test Data)", type=["csv"])
+
 
 # --- 2. LOAD RESOURCES ---
 try:
@@ -30,8 +31,9 @@ except Exception as e:
     st.stop()
 
 # --- 3. MODEL SELECTION ---
-model_choice = st.sidebar.selectbox("Select Model", list(models.keys()))
-
+model_choice = st.selectbox("Select Model", list(models.keys()))
+st.write("### Model Insight")
+st.info(f"You are currently using **{model_choice}** for prediction.")
 # --- 4. MAIN LOGIC ---
 if uploaded_file:
     # Read Data
@@ -148,16 +150,16 @@ if uploaded_file:
             col1, col2 = st.columns(2)
             col1.metric("Accuracy", f"{acc:.2f}")
             
-            if st.checkbox("Show Confusion Matrix"):
-                cm = confusion_matrix(y_true, predictions)
-                fig, ax = plt.subplots(1,1)
-                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
-                ax.set_xlabel('Predicted')
-                ax.set_ylabel('Actual')
-                st.pyplot(fig, use_container_width=False)
+            st.text("Confusion matrix")
+            cm = confusion_matrix(y_true, predictions)
+            fig, ax = plt.subplots(1,1)
+            sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
+            ax.set_xlabel('Predicted')
+            ax.set_ylabel('Actual')
+            st.pyplot(fig, use_container_width=False)
 
-            if st.checkbox("Show Classification Report"):
-                st.text(classification_report(y_true, predictions))
+            st.text("Classification Report")
+            st.text(classification_report(y_true, predictions))
                 
         except ValueError as e:
             st.warning(f"Could not calculate metrics. Check target labels mapping. Error: {e}")
