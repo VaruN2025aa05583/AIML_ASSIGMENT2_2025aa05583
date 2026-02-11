@@ -1,18 +1,24 @@
 import streamlit as st
 import pandas as pd
 import joblib
-from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="Breast Cancer Classification", layout="wide")
 
 st.title("Breast Cancer Classification App")
-st.markdown("Assignment 2 - BITS Pilani")
+st.markdown("ML Assignment 2 | Breast Cancer Classification - 2025aa05583")
+
+if os.path.exists('breast_cancer.csv'):
+    with open("breast_cancer.csv", "rb") as f:
+        st.download_button("Download Sample CSV",data=f,file_name="breast_cancer.csv",mime="text/csv")
 
 # --- 1. UPLOAD DATA ---
-uploaded_file = st.sidebar.file_uploader("Upload CSV file (Test Data)", type=["csv"])
+uploaded_file = st.file_uploader("Upload CSV file (Test Data)", type=["csv"])
+
 
 # --- 2. LOAD RESOURCES ---
 try:
@@ -30,8 +36,9 @@ except Exception as e:
     st.stop()
 
 # --- 3. MODEL SELECTION ---
-model_choice = st.sidebar.selectbox("Select Model", list(models.keys()))
-
+model_choice = st.selectbox("Select Model", list(models.keys()))
+st.write("### Model Insight")
+st.info(f"You are currently using **{model_choice}** for prediction.")
 # --- 4. MAIN LOGIC ---
 if uploaded_file:
     # Read Data
@@ -139,28 +146,43 @@ if uploaded_file:
 
     # --- 6. EVALUATION ---
     if y_true is not None:
-        st.write("### 3. Evaluation Metrics")
+        st.subheader("📊 Model Evaluation Metrics")
         
-        # Calculate Metrics
         try:
+            # 1. High-Level Metrics Row
             acc = accuracy_score(y_true, predictions)
+            f1 = f1_score(y_true, predictions, average='weighted')
             
-            col1, col2 = st.columns(2)
-            col1.metric("Accuracy", f"{acc:.2f}")
+            m_col1, m_col2, m_col3 = st.columns(3)
+            m_col1.metric("Accuracy", f"{acc:.2%}")
+            m_col2.metric("F1 Score (Weighted)", f"{f1:.2f}")
+            # Add a placeholder or a third metric like Precision/Recall here
             
-            if st.checkbox("Show Confusion Matrix"):
-                cm = confusion_matrix(y_true, predictions)
-                fig, ax = plt.subplots(1,1)
-                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
-                ax.set_xlabel('Predicted')
-                ax.set_ylabel('Actual')
-                st.pyplot(fig, use_container_width=False)
+            st.divider()
 
-            if st.checkbox("Show Classification Report"):
-                st.text(classification_report(y_true, predictions))
+            # 2. Visualizations & Detailed Report
+            col_left, col_right = st.columns([1.2, 1])
+
+            with col_left:
+                st.markdown("**Confusion Matrix**")
+                cm = confusion_matrix(y_true, predictions)
+                fig, ax = plt.subplots(figsize=(5, 4))
+                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False)
+                ax.set_xlabel('Predicted Labels')
+                ax.set_ylabel('True Labels')
+                st.pyplot(fig, use_container_width=True)
+
+            with col_right:
+                st.markdown("**Classification Report**")
+                # Convert report to dataframe for a neat table view
+                report_dict = classification_report(y_true, predictions, output_dict=True)
+                report_df = pd.DataFrame(report_dict).transpose()
                 
-        except ValueError as e:
-            st.warning(f"Could not calculate metrics. Check target labels mapping. Error: {e}")
+                # Displaying as a dataframe is much cleaner than raw text
+                st.dataframe(report_df.style.format(precision=2), use_container_width=True)
+                    
+        except Exception as e:
+            st.error(f"**Evaluation Error:** {e}")
 
 else:
     st.info("Please upload a CSV file to proceed.")
