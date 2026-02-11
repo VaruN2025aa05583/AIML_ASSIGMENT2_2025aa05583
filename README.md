@@ -33,18 +33,3 @@ The following six machine learning models were trained and evaluated on a 20% te
 | **Naive Bayes** | **Best Model for Medical Safety:** Achieved a perfect Recall score of **1.0000**, meaning it successfully identified 100% of the malignant cases in the test set (zero False Negatives). |
 | **Random Forest** | Very stable performance with high AUC (0.9951), balancing precision and recall effectively without much tuning. |
 | **XGBoost** | Provided robust results similar to Logistic Regression, effectively handling potential non-linear patterns in the data. |
-
-## 5. Project Structure
-```text
-ML_Assignment_2/
-├── app.py                  # Main Streamlit application
-├── requirements.txt        # Python dependencies
-├── README.md               # Project documentation
-└── model/                  # Saved Models & Scaler
-    ├── logistic_regression.pkl
-    ├── decision_tree.pkl
-    ├── knn.pkl
-    ├── naive_bayes.pkl
-    ├── random_forest.pkl
-    ├── xgboost.pkl
-    └── scaler.pkl
