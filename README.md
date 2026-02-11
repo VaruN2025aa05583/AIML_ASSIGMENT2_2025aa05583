@@ -23,7 +23,7 @@ To build a machine learning classification pipeline to predict the diagnosis of 
 | **Random Forest** | 0.9649   | 0.9951 | 0.9589    | 0.9859 | 0.9722   | 0.9253 |
 | **XGBoost** | *Run Locally* | *Run Locally* | *Run Locally* | *Run Locally* | *Run Locally* | *Run Locally* |
 
-*Note: Replace the values above with the actual outputs from your `train_models.py` execution.*
+*Note: actual outputs from your `train_models.py` execution.*
 
 ## Observations [cite: 79]
 
